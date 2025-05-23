@@ -1,27 +1,35 @@
-version: '3'
+version: '3.9'
 
 services:
   app:
     build: .
+    container_name: backend_app
     ports:
       - "3000:3000"
     env_file:
-      - .env  # Arquivo de variáveis de ambiente
+      - .env
     volumes:
       - .:/app
+      - /app/node_modules  # Evita sobrescrever node_modules local do container
+    command: npx ts-node-dev --respawn --transpile-only src/index.ts
+    depends_on:
+      - db
     networks:
       - backend
 
   db:
     image: postgres:13
+    container_name: postgres_db
+    ports:
+      - "5432:5432"  # Expor opcionalmente para acesso externo
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # Variáveis do arquivo .env
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    networks:
-      - backend
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
 networks:
   backend:
