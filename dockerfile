@@ -9,6 +9,8 @@ COPY package*.json ./
 # Instala todas as dependências (inclusive as de dev)
 RUN npm install
 
+RUN chmod +x node_modules/.bin/ts-node-dev
+
 # Copia o restante dos arquivos da aplicação
 COPY . .
 
@@ -16,4 +18,6 @@ COPY . .
 EXPOSE 3000
 
 # Comando padrão (roda a aplicação com hot reload)
-CMD ["npm", "run", "dev"]
+#CMD ["npm", "run", "dev"]
+
+CMD ["npx", "ts-node-dev", "--respawn", "--transpile-only", "src/index.ts"]
